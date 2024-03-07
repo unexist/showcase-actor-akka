@@ -1,0 +1,7 @@
+= Showcase for actor model based on Akka
+
+This project holds a showcase for Akka related things.
+
+== Links
+
+- https://akka.io/
