@@ -20,7 +20,6 @@ import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.server.PathMatchers;
 import akka.http.javadsl.server.Route;
 import dev.unexist.showcase.todo.domain.todo.Todo;
-import dev.unexist.showcase.todo.domain.todo.TodoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,8 +28,8 @@ import java.util.concurrent.CompletionStage;
 
 import static akka.http.javadsl.server.Directives.complete;
 import static akka.http.javadsl.server.Directives.concat;
-import static akka.http.javadsl.server.Directives.entity;
 import static akka.http.javadsl.server.Directives.delete;
+import static akka.http.javadsl.server.Directives.entity;
 import static akka.http.javadsl.server.Directives.get;
 import static akka.http.javadsl.server.Directives.onSuccess;
 import static akka.http.javadsl.server.Directives.path;
@@ -51,7 +50,7 @@ public class TodoRoutes {
     {
         this.todoRegistryActor = todoRegistryActor;
         this.scheduler = system.scheduler();
-        this.askTimeout = system.settings().config().getDuration("todo-app.routes.ask-timeout");
+        this.askTimeout = system.settings().config().getDuration("http.ask-timeout");
     }
 
     private CompletionStage<TodoRegistry.GetTodoResponse> getTodo(String name) {
