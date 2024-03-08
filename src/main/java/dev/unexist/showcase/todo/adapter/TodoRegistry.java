@@ -18,16 +18,18 @@ import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
 import dev.unexist.showcase.todo.domain.todo.Todo;
+import dev.unexist.showcase.todo.domain.todo.TodoBase;
 import dev.unexist.showcase.todo.domain.todo.TodoService;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class TodoRegistry extends AbstractBehavior<TodoRegistry.Command> {
     sealed public interface Command {}
 
     public record GetTodos(ActorRef<Todos> replyTo) implements Command {}
-    public record CreateTodo(Todo todo, ActorRef<ActionPerformed> replyTo) implements Command {}
+    public record CreateTodo(TodoBase todoBase, ActorRef<ActionPerformed> replyTo) implements Command {}
     public record GetTodoResponse(Optional<Todo> maybeTodo) {}
     public record GetTodo(String id, ActorRef<GetTodoResponse> replyTo) implements Command {}
     public record DeleteTodo(String id, ActorRef<ActionPerformed> replyTo) implements Command {}
@@ -63,11 +65,10 @@ public class TodoRegistry extends AbstractBehavior<TodoRegistry.Command> {
     }
 
     private Behavior<Command> onCreateTodo(CreateTodo command) {
-        todoService.create(
-        todos.add(command.todo());
+        this.todoService.create(command.todoBase(), String.valueOf(UUID.randomUUID()));
 
         command.replyTo().tell(
-                new ActionPerformed(String.format("Todo %s created.", command.todo().title())));
+                new ActionPerformed(String.format("Todo %s created.", command.todoBase().title())));
 
         return this;
     }

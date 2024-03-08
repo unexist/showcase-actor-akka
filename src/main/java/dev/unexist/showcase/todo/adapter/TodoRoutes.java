@@ -19,7 +19,7 @@ import akka.http.javadsl.marshallers.jackson.Jackson;
 import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.server.PathMatchers;
 import akka.http.javadsl.server.Route;
-import dev.unexist.showcase.todo.domain.todo.Todo;
+import dev.unexist.showcase.todo.domain.todo.TodoBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,9 +68,9 @@ public class TodoRoutes {
                 TodoRegistry.GetTodos::new, this.askTimeout, this.scheduler);
     }
 
-    private CompletionStage<TodoRegistry.ActionPerformed> createTodo(Todo todo) {
+    private CompletionStage<TodoRegistry.ActionPerformed> createTodo(TodoBase todoBase) {
         return AskPattern.ask(this.todoRegistryActor,
-                ref -> new TodoRegistry.CreateTodo(todo, ref), this.askTimeout, this.scheduler);
+                ref -> new TodoRegistry.CreateTodo(todoBase, ref), this.askTimeout, this.scheduler);
     }
 
     /**
@@ -88,9 +88,9 @@ public class TodoRoutes {
                                         ),
                                         post(() ->
                                                 entity(
-                                                        Jackson.unmarshaller(Todo.class),
-                                                        todo ->
-                                                                onSuccess(createTodo(todo), performed -> {
+                                                        Jackson.unmarshaller(TodoBase.class),
+                                                        todoBase ->
+                                                                onSuccess(createTodo(todoBase), performed -> {
                                                                     log.info("Create result: {}",
                                                                             performed.description());
                                                                     return complete(StatusCodes.CREATED, performed,
